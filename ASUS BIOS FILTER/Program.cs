@@ -15,12 +15,10 @@ namespace BIOS_Filter_for_ASUS
             string parentDir = Directory.GetParent(currentDir).FullName;
 
             // Get the subdirectories for new and old BIOS files
-            string newDir = Path.Combine(parentDir, "NEW_BIOS_FILES");
-            string oldDir = Path.Combine(parentDir, "OLD_BIOS_FILES");
 
-            // Create the subdirectories if they don't exist
-            Directory.CreateDirectory(newDir);
-            Directory.CreateDirectory(oldDir);
+            //Decided to keep only the folder for "new" BIOS files.
+            //string newDir = Path.Combine(parentDir, "NEW_BIOS_FILES");
+            string oldDir = Path.Combine(parentDir, "OLD_BIOS_FILES");
 
             // Get all the BIOS files in the parent directory
             string[] biosFiles = Directory.GetFiles(parentDir, "*.*");
@@ -29,6 +27,9 @@ namespace BIOS_Filter_for_ASUS
             var groups = biosFiles.GroupBy(f => Path.GetFileNameWithoutExtension(f).Split('.')[0]);
 
             // Loop through each group of BIOS files
+
+            Console.WriteLine("Processing, please wait. It may take up to 5 minutes if you are running the program on USB flash drive");
+
             foreach (var group in groups)
             {
                 // Get the model name
@@ -41,7 +42,9 @@ namespace BIOS_Filter_for_ASUS
                     string latestFile = group.OrderByDescending(f => int.Parse(Path.GetExtension(f).TrimStart('.'))).First();
 
                     // Copy the latest BIOS file to the new directory
-                    File.Copy(latestFile, Path.Combine(newDir, Path.GetFileName(latestFile)), true);
+
+                    //Decided to keep only the folder for "new" BIOS files.
+                    //File.Copy(latestFile, Path.Combine(newDir, Path.GetFileName(latestFile)), true);
 
                     // Move the other BIOS files to the old directory
                     foreach (string file in group.Except(new[] { latestFile }))
@@ -52,6 +55,9 @@ namespace BIOS_Filter_for_ASUS
             }
 
             // Print a message to indicate the program is done
+
+            Console.Clear();
+
             Console.WriteLine("The program has finished updating the BIOS files. Hit Enter to close the window.");
             Console.ReadLine();
         }
